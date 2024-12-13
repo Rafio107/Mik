@@ -70,7 +70,7 @@ if menu == "Home":
 elif menu == "Group Members":
     # Mapping names to image paths and roles
     anggota = [
-        {"name": "Muhammad Rafi Akbar", "image": "Gambar esi.jpg", "position": "Kang Gendong"},
+        {"name": "Muhammad Rafi Akbar", "image": "M.Rafi Akbar.jpg", "position": "Kang Gendong"},
         {"name": "Rifki Ibithal Eka Sambudi", "image": "Gambar rifki.jpg", "position": "Leader"},
         {"name": "Aulia Rahma Mulya", "image": "Gambar aul 2.jpg", "position": "Beban"},
         {"name": "Florenza Natania", "image": "Gambar flo.jpg", "position": "Beban"},
