@@ -2,17 +2,15 @@ import io
 import zipfile
 from pathlib import Path
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageOps
 from rembg import remove
-import uuid
-import base64
 
 # Constants
 MAX_FILES = 5
 ALLOWED_TYPES = ["png", "jpg", "jpeg"]
 
 # Set up page configuration
-st.set_page_config(page_title="Background Remover", page_icon="🌟")
+st.set_page_config(page_title="Linear Algebra Group 6", page_icon="🌟")
 
 def hide_streamlit_style():
     """Applies custom styles to the Streamlit app."""
@@ -31,62 +29,71 @@ def hide_streamlit_style():
         footer {
             visibility: hidden;
         }
-        .custom-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-        .custom-container .left {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .custom-container h1 {
-            margin: 0;
-            font-size: 2rem;
-            color: #333;
-        }
-        .custom-container p {
-            margin: 0;
-            color: #777;
-        }
-        .custom-container .right {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #555;
-        }
-        .footer a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
+# Function to resize and pad images
+def resize_and_pad(image, target_size=(300, 300), color=(255, 255, 255)):
+    """
+    Resize and pad an image to the target size while maintaining aspect ratio.
+    """
+    return ImageOps.pad(image, target_size, color=color)
+
 # Hide default styles and apply custom styles
 hide_streamlit_style()
 
 # Navigation menu
-menu = st.sidebar.selectbox("Pilih Menu", ["Remove Background", "Anggota - Group 3"])
+menu = st.sidebar.selectbox("Select a Page", ["Home", "Group Members", "Background Remover"])
 
-if menu == "Remove Background":
+if menu == "Home":
+    # Content for the home page
+    st.markdown("<h1>Linear Algebra Group 3</h1>", unsafe_allow_html=True)
+    st.markdown("<h2>Welcome to Background Remover</h2>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        Instruksi untuk menggunakan fitur Background Remover:
+        1. Unggah gambar dengan format **PNG**, **JPG**, atau **JPEG**.
+        2. Anda dapat mengunggah hingga 5 gambar sekaligus.
+        3. Tekan tombol **Remove Background** untuk memproses gambar.
+        4. Setelah diproses, unduh gambar yang telah dihapus background-nya secara individual atau dalam bentuk file ZIP jika lebih dari satu gambar.
+        """,
+        unsafe_allow_html=True,
+    )
+
+elif menu == "Group Members":
+    # Mapping names to image paths and roles
+    anggota = [
+        {"name": "Muhammad Rafi Akbar", "image": "Gambar esi.jpg", "position": "Kang Gendong"},
+        {"name": "Rifki Ibithal Eka Sambudi", "image": "Gambar rifki.jpg", "position": "Leader"},
+        {"name": "Aulia Rahma Mulya", "image": "Gambar aul 2.jpg", "position": "Beban"},
+        {"name": "Florenza Natania", "image": "Gambar flo.jpg", "position": "Beban"},
+    ]
+
+    st.markdown("<h2 style='text-align: center;'>Group Members - Group 3</h2>", unsafe_allow_html=True)
+
+    # Display members in a grid-like format
+    col1, col2, col3, col4 = st.columns(4)  # Adjust column layout if needed
+    columns = [col1, col2, col3, col4]
+
+    for idx, member in enumerate(anggota):
+        with columns[idx % 4]:
+            image_path = Path(member["image"])
+            if image_path.exists():
+                original_image = Image.open(image_path)
+                resized_image = resize_and_pad(original_image, target_size=(300, 300))  # Adjust size
+                st.image(resized_image, caption=member["name"], use_container_width=False)
+                st.markdown(
+                    f"<p style='text-align: center;'>{member['position']}</p>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.warning(f"Image for {member['name']} not found: {member['image']}")
+
+elif menu == "Background Remover":
     uploaded_files = st.file_uploader(
-        label="", type=ALLOWED_TYPES, accept_multiple_files=True
+        label="Upload your images", type=ALLOWED_TYPES, accept_multiple_files=True
     )
 
     if st.button("Remove Background", key="remove_btn"):
@@ -108,9 +115,9 @@ if menu == "Remove Background":
                 )
                 col1, col2 = st.columns(2)
                 with col1:
-                    st.image(original, caption="Original", use_column_width=True)
+                    st.image(original, caption="Original", use_container_width=True)
                 with col2:
-                    st.image(result, caption="Processed", use_column_width=True)
+                    st.image(result, caption="Processed", use_container_width=True)
 
             if len(results) > 1:
                 zip_buffer = io.BytesIO()
@@ -139,57 +146,26 @@ if menu == "Remove Background":
         else:
             st.warning("Please upload at least one image.")
 
-    st.markdown(
-        """
-        <div style="margin-top: 2rem; padding: 1rem; background-color: #f5f5f5; border-radius: 10px;">
-            <h3>Instructions:</h3>
-            <ul>
-                <li>Upload up to 5 images at once (JPG or PNG format).</li>
-                <li>Click "Remove Background" to process the images.</li>
-                <li>Download processed images individually or as a ZIP file.</li>
-            </ul>
-        </div>
-        <div style="margin-top: 2rem;">
-            <h3>Example:</h3>
-            <div style="display: flex; flex-direction: row; gap: 1rem; align-items: center;">
-                <div>
-                    <h4>Original Image</h4>
-                    <img src="images raiden ei.jpg" alt="Original" style="border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 150px;">
-                </div>
-                <div>
-                    <h4>Processed Image</h4>
-                    <img src="images raiden ei_nobg.png" alt="Processed" style="border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 150px;">
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-elif menu == "Anggota - Group 3":
-    # Mapping names to image paths
-    anggota = {
-        "Muhammad Rafi Akbar": "images/rafi.jpg",
-        "Rifki Ibithal Eka Sambudi": "Gambar rifki.jpg",
-        "Aulia Rahma Mulya": "images/aulia.jpg",
-        "Florenza Natania": "images/florenza.jpg",
-    }
-
-    st.markdown("<h2>Anggota - Group 3</h2>", unsafe_allow_html=True)
-
-    for name, image_path in anggota.items():
-        if st.button(name):
-            try:
-                st.image(image_path, caption=name, width=150)  # Set width to make image smaller
-            except FileNotFoundError:
-                st.warning(f"Gambar untuk {name} tidak ditemukan.")
-            except Exception as e:
-                st.error(f"Terjadi kesalahan saat memuat gambar untuk {name}: {e}")
+    # Example Section
+    st.markdown("<h3>Example:</h3>", unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        example_image_path = Path("images raiden ei.jpg")
+        if example_image_path.exists():
+            st.image(str(example_image_path), caption="Original Example", use_container_width=True)
+        else:
+            st.warning("Original example image not found.")
+    with col2:
+        processed_example_path = Path("images raiden ei_nobg.png")
+        if processed_example_path.exists():
+            st.image(str(processed_example_path), caption="Processed Example", use_container_width=True)
+        else:
+            st.warning("Processed example image not found.")
 
 # Footer
 st.markdown(
     """
-    <div class="footer">
+    <div style="text-align: center; margin-top: 2rem;">
         Developed by <a href="mailto:rafiotsuka@gmail.com">rafiotsuka@gmail.com</a>
     </div>
     """,
