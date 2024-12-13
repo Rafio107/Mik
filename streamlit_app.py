@@ -1,3 +1,8 @@
+import os
+
+# Coba instal onnxruntime jika belum terinstal
+os.system('pip install onnxruntime')
+
 import io
 import zipfile
 from pathlib import Path
