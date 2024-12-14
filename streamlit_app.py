@@ -1,8 +1,4 @@
 import os
-
-# Coba instal onnxruntime jika belum terinstal
-os.system('pip install onnxruntime')
-
 import io
 import zipfile
 from pathlib import Path
@@ -41,13 +37,18 @@ def hide_streamlit_style():
 
 # Function to resize and pad images
 def resize_and_pad(image, target_size=(300, 300), color=(255, 255, 255)):
-    """
-    Resize and pad an image to the target size while maintaining aspect ratio.
-    """
+    """Resize and pad an image to the target size while maintaining aspect ratio."""
     return ImageOps.pad(image, target_size, color=color)
 
 # Hide default styles and apply custom styles
 hide_streamlit_style()
+
+# Add a place for a top logo or image at the top of all pages
+top_image_path = Path("Logo PUS.jpeg")  # Ganti dengan path gambar logo Anda
+if top_image_path.exists():
+    st.image(str(top_image_path), use_column_width=True)
+else:
+    st.warning("Top image not found.")
 
 # Navigation menu
 menu = st.sidebar.selectbox("Select a Page", ["Home", "Group Members", "Background Remover"])
@@ -101,8 +102,9 @@ elif menu == "Background Remover":
         label="Upload your images", type=ALLOWED_TYPES, accept_multiple_files=True
     )
 
-    if st.button("Remove Background", key="remove_btn"):
-        if uploaded_files:
+    if uploaded_files:
+        # Process the images and remove the background
+        if st.button("Remove Background", key="remove_btn"):
             if len(uploaded_files) > MAX_FILES:
                 st.warning(f"Maximum {MAX_FILES} files can be processed.")
                 uploaded_files = uploaded_files[:MAX_FILES]
@@ -124,6 +126,7 @@ elif menu == "Background Remover":
                 with col2:
                     st.image(result, caption="Processed", use_container_width=True)
 
+            # Provide option to download images as a zip file
             if len(results) > 1:
                 zip_buffer = io.BytesIO()
                 with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
@@ -148,24 +151,40 @@ elif menu == "Background Remover":
                     file_name=f"{Path(results[0][2]).stem}_nobg.png",
                     mime="image/png",
                 )
-        else:
-            st.warning("Please upload at least one image.")
 
-    # Example Section
-    st.markdown("<h3>Example:</h3>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        example_image_path = Path("images raiden ei.jpg")
-        if example_image_path.exists():
-            st.image(str(example_image_path), caption="Original Example", use_container_width=True)
-        else:
-            st.warning("Original example image not found.")
-    with col2:
-        processed_example_path = Path("images raiden ei_nobg.png")
-        if processed_example_path.exists():
-            st.image(str(processed_example_path), caption="Processed Example", use_container_width=True)
-        else:
-            st.warning("Processed example image not found.")
+        # Geometry transformation section
+        st.markdown("<h3>Geometry Transformations</h3>", unsafe_allow_html=True)
+        transform_option = st.selectbox("Select Transformation", ["None", "Rotasi", "Translasi", "Scaling", "Shear"])
+
+        if transform_option != "None" and uploaded_files:
+            for uploaded_file in uploaded_files:
+                image = Image.open(uploaded_file)
+
+                if transform_option == "Rotasi":
+                    angle = st.slider("Pilih Sudut Rotasi", min_value=-180, max_value=180, value=0)
+                    rotated_image = image.rotate(angle, expand=True)
+                    st.image(rotated_image, caption=f"Rotated Image {angle}°", use_column_width=True)
+
+                elif transform_option == "Translasi":
+                    tx = st.slider("Translasi pada sumbu X", min_value=-100, max_value=100, value=0)
+                    ty = st.slider("Translasi pada sumbu Y", min_value=-100, max_value=100, value=0)
+                    translated_image = ImageOps.offset(image, tx, ty)
+                    st.image(translated_image, caption=f"Translated Image ({tx}, {ty})", use_column_width=True)
+
+                elif transform_option == "Scaling":
+                    scale_x = st.slider("Skala pada sumbu X", min_value=0.5, max_value=2.0, value=1.0)
+                    scale_y = st.slider("Skala pada sumbu Y", min_value=0.5, max_value=2.0, value=1.0)
+                    scaled_image = image.resize((int(image.width * scale_x), int(image.height * scale_y)))
+                    st.image(scaled_image, caption=f"Scaled Image ({scale_x}, {scale_y})", use_column_width=True)
+
+                elif transform_option == "Shear":
+                    shear_factor = st.slider("Shear Factor", min_value=-1.0, max_value=1.0, value=0.0)
+                    shear_matrix = (1, shear_factor, 0, 0, 1, 0)
+                    sheared_image = image.transform(image.size, Image.AFFINE, shear_matrix)
+                    st.image(sheared_image, caption=f"Sheared Image (Factor: {shear_factor})", use_column_width=True)
+
+    else:
+        st.warning("Please upload at least one image.")
 
 # Footer
 st.markdown(
