@@ -46,7 +46,8 @@ hide_streamlit_style()
 # Add a place for a top logo or image at the top of all pages
 top_image_path = Path("Logo PUS.jpeg")  # Ganti dengan path gambar logo Anda
 if top_image_path.exists():
-    st.image(str(top_image_path), use_column_width=True)
+    logo_image = Image.open(str(top_image_path))
+    st.image(logo_image, width=150)  # Sesuaikan ukuran logo dengan width
 else:
     st.warning("Top image not found.")
 
@@ -163,25 +164,25 @@ elif menu == "Background Remover":
                 if transform_option == "Rotasi":
                     angle = st.slider("Pilih Sudut Rotasi", min_value=-180, max_value=180, value=0)
                     rotated_image = image.rotate(angle, expand=True)
-                    st.image(rotated_image, caption=f"Rotated Image {angle}°", use_column_width=True)
+                    st.image(rotated_image, caption=f"Rotated Image {angle}°", use_container_width=True)
 
                 elif transform_option == "Translasi":
                     tx = st.slider("Translasi pada sumbu X", min_value=-100, max_value=100, value=0)
                     ty = st.slider("Translasi pada sumbu Y", min_value=-100, max_value=100, value=0)
                     translated_image = ImageOps.offset(image, tx, ty)
-                    st.image(translated_image, caption=f"Translated Image ({tx}, {ty})", use_column_width=True)
+                    st.image(translated_image, caption=f"Translated Image ({tx}, {ty})", use_container_width=True)
 
                 elif transform_option == "Scaling":
                     scale_x = st.slider("Skala pada sumbu X", min_value=0.5, max_value=2.0, value=1.0)
                     scale_y = st.slider("Skala pada sumbu Y", min_value=0.5, max_value=2.0, value=1.0)
                     scaled_image = image.resize((int(image.width * scale_x), int(image.height * scale_y)))
-                    st.image(scaled_image, caption=f"Scaled Image ({scale_x}, {scale_y})", use_column_width=True)
+                    st.image(scaled_image, caption=f"Scaled Image ({scale_x}, {scale_y})", use_container_width=True)
 
                 elif transform_option == "Shear":
                     shear_factor = st.slider("Shear Factor", min_value=-1.0, max_value=1.0, value=0.0)
                     shear_matrix = (1, shear_factor, 0, 0, 1, 0)
                     sheared_image = image.transform(image.size, Image.AFFINE, shear_matrix)
-                    st.image(sheared_image, caption=f"Sheared Image (Factor: {shear_factor})", use_column_width=True)
+                    st.image(sheared_image, caption=f"Sheared Image (Factor: {shear_factor})", use_container_width=True)
 
     else:
         st.warning("Please upload at least one image.")
