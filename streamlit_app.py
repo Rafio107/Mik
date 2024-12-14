@@ -74,7 +74,7 @@ elif menu == "Group Members":
     anggota = [
         {"name": "Muhammad Rafi Akbar", "image": "M.Rafi Akbar.jpg", "position": "Kang Gendong"},
         {"name": "Rifki Ibithal Eka Sambudi", "image": "Gambar rifki.jpg", "position": "Leader"},
-        {"name": "Aulia Rahma Mulya", "image": "Gambar aul 2.jpg", "position": "Beban"},
+        {"name": "Aulia Rahma Mulya", "image": "Gambar aul 2.jpg", "position": "Neng Cantik"},
         {"name": "Florenza Natania", "image": "Gambar flo.jpg", "position": "Beban"},
     ]
 
