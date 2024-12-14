@@ -11,7 +11,7 @@ MAX_FILES = 5
 ALLOWED_TYPES = ["png", "jpg", "jpeg"]
 
 # Set up page configuration
-st.set_page_config(page_title="Linear Algebra Group 6", page_icon="🌟")
+st.set_page_config(page_title="Linear Algebra Group 3", page_icon="🌟")
 
 def hide_streamlit_style():
     """Applies custom styles to the Streamlit app."""
