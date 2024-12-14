@@ -75,7 +75,7 @@ elif menu == "Group Members":
         {"name": "Muhammad Rafi Akbar", "image": "M.Rafi Akbar.jpg", "position": "Kang Gendong"},
         {"name": "Rifki Ibithal Eka Sambudi", "image": "Gambar rifki.jpg", "position": "Leader"},
         {"name": "Aulia Rahma Mulya", "image": "Gambar aul 2.jpg", "position": "Neng Cantik"},
-        {"name": "Florenza Natania", "image": "Gambar flo.jpg", "position": "Beban"},
+        {"name": "Florenza Natania", "image": "Gambar flo.jpg", "position": "Neng Imut"},
     ]
 
     st.markdown("<h2 style='text-align: center;'>Group Members - Group 3</h2>", unsafe_allow_html=True)
